@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "PropertyDNA MVP"
+version = "1.0.0"
+id = "artifacts/property-dna"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24304
+
+[services.development]
+run = "pnpm --filter @workspace/property-dna run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/property-dna", "run", "build" ]
+publicDir = "artifacts/property-dna/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24304"
+BASE_PATH = "/"

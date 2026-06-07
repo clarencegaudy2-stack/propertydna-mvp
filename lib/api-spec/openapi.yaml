@@ -1,22 +1,27 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: PropertyDNA MVP API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: deals
+    description: Property deal operations
+  - name: dashboard
+    description: Dashboard summary operations
+  - name: admin
+    description: Admin operations
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +29,168 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /deals:
+    get:
+      operationId: listDeals
+      tags: [deals]
+      summary: List all deals for current user
+      responses:
+        "200":
+          description: List of deals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Deal"
+    post:
+      operationId: createDeal
+      tags: [deals]
+      summary: Submit a new property deal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DealInput"
+      responses:
+        "201":
+          description: Deal created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deal"
+
+  /deals/{id}:
+    get:
+      operationId: getDeal
+      tags: [deals]
+      summary: Get a single deal by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deal found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deal"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateDeal
+      tags: [deals]
+      summary: Update a deal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DealUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deal"
+    delete:
+      operationId: deleteDeal
+      tags: [deals]
+      summary: Delete a deal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /deals/{id}/results:
+    get:
+      operationId: getDealResults
+      tags: [deals]
+      summary: Get calculated results for a deal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deal calculation results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DealResults"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /admin/deals:
+    get:
+      operationId: adminListDeals
+      tags: [admin]
+      summary: Admin - list all deals across all users
+      responses:
+        "200":
+          description: All deals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Deal"
+
+  /admin/deals/{id}/status:
+    patch:
+      operationId: adminUpdateDealStatus
+      tags: [admin]
+      summary: Admin - update a deal's report status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusUpdate"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deal"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +201,217 @@ components:
       required:
         - status
 
+    DealInput:
+      type: object
+      required:
+        - address
+        - purchasePrice
+        - estimatedRent
+        - downPayment
+        - interestRate
+        - loanTerm
+      properties:
+        address:
+          type: string
+        purchasePrice:
+          type: number
+        estimatedRent:
+          type: number
+        taxes:
+          type: number
+        insurance:
+          type: number
+        hoa:
+          type: number
+        maintenance:
+          type: number
+        propertyManagement:
+          type: number
+        utilities:
+          type: number
+        downPayment:
+          type: number
+        interestRate:
+          type: number
+        loanTerm:
+          type: integer
+        rehabBudget:
+          type: number
+        closingCosts:
+          type: number
+        notes:
+          type: ["string", "null"]
+
+    DealUpdate:
+      type: object
+      properties:
+        address:
+          type: string
+        purchasePrice:
+          type: number
+        estimatedRent:
+          type: number
+        taxes:
+          type: number
+        insurance:
+          type: number
+        hoa:
+          type: number
+        maintenance:
+          type: number
+        propertyManagement:
+          type: number
+        utilities:
+          type: number
+        downPayment:
+          type: number
+        interestRate:
+          type: number
+        loanTerm:
+          type: integer
+        rehabBudget:
+          type: number
+        closingCosts:
+          type: number
+        notes:
+          type: ["string", "null"]
+
+    StatusUpdate:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [NEW, PAID, IN_PROGRESS, COMPLETED]
+
+    Deal:
+      type: object
+      required:
+        - id
+        - address
+        - purchasePrice
+        - estimatedRent
+        - downPayment
+        - interestRate
+        - loanTerm
+        - status
+        - createdAt
+      properties:
+        id:
+          type: integer
+        address:
+          type: string
+        purchasePrice:
+          type: number
+        estimatedRent:
+          type: number
+        taxes:
+          type: number
+        insurance:
+          type: number
+        hoa:
+          type: number
+        maintenance:
+          type: number
+        propertyManagement:
+          type: number
+        utilities:
+          type: number
+        downPayment:
+          type: number
+        interestRate:
+          type: number
+        loanTerm:
+          type: integer
+        rehabBudget:
+          type: number
+        closingCosts:
+          type: number
+        notes:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [NEW, PAID, IN_PROGRESS, COMPLETED]
+        dealScore:
+          type: ["number", "null"]
+        dealRating:
+          type: ["string", "null"]
+        recommendation:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    DealResults:
+      type: object
+      required:
+        - dealId
+        - monthlyCashFlow
+        - annualCashFlow
+        - cashOnCashReturn
+        - dscr
+        - capRate
+        - dealScore
+        - dealRating
+        - recommendation
+      properties:
+        dealId:
+          type: integer
+        monthlyCashFlow:
+          type: number
+        annualCashFlow:
+          type: number
+        cashOnCashReturn:
+          type: number
+        dscr:
+          type: number
+        capRate:
+          type: number
+        dealScore:
+          type: number
+        dealRating:
+          type: string
+        recommendation:
+          type: string
+        monthlyMortgage:
+          type: number
+        totalMonthlyExpenses:
+          type: number
+        noi:
+          type: number
+        totalInvestment:
+          type: number
+
+    DashboardStats:
+      type: object
+      required:
+        - totalDeals
+        - newDeals
+        - inProgressDeals
+        - completedDeals
+        - avgDealScore
+        - greenDeals
+        - yellowDeals
+        - redDeals
+        - recentDeals
+      properties:
+        totalDeals:
+          type: integer
+        newDeals:
+          type: integer
+        inProgressDeals:
+          type: integer
+        completedDeals:
+          type: integer
+        avgDealScore:
+          type: number
+        greenDeals:
+          type: integer
+        yellowDeals:
+          type: integer
+        redDeals:
+          type: integer
+        recentDeals:
+          type: array
+          items:
+            $ref: "#/components/schemas/Deal"
