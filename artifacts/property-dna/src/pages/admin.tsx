@@ -8,6 +8,7 @@ import {
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatCurrency, cn } from "@/lib/utils";
+import { ratingLabel, RATING_TABLE_CLASS } from "@/lib/ratings";
 import { ShieldCheck, MapPin, ChevronRight } from "lucide-react";
 
 const STATUSES = ["NEW", "PAID", "IN_PROGRESS", "COMPLETED"] as const;
@@ -25,12 +26,6 @@ const statusColors: Record<DealStatus, string> = {
   PAID: "bg-blue-50 text-blue-600",
   IN_PROGRESS: "bg-amber-50 text-amber-600",
   COMPLETED: "bg-emerald-50 text-emerald-700",
-};
-
-const ratingColors: Record<string, string> = {
-  Green: "text-emerald-600 font-bold",
-  Yellow: "text-amber-600 font-bold",
-  Red: "text-red-600 font-bold",
 };
 
 export default function AdminPage() {
@@ -63,7 +58,7 @@ export default function AdminPage() {
           <h1 className="text-lg sm:text-xl font-bold text-foreground">Admin Dashboard</h1>
         </div>
 
-        {/* Status summary — scrollable row on mobile */}
+        {/* Status summary */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
           <div className="bg-card border border-border rounded-xl px-4 py-3 text-center">
             <div className="text-xl font-bold text-foreground">{total}</div>
@@ -77,7 +72,7 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {/* Deals — card list on mobile, table on desktop */}
+        {/* Deals */}
         <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
           <div className="px-4 sm:px-6 py-4 border-b border-border flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">All Property Deals</h2>
@@ -93,7 +88,7 @@ export default function AdminPage() {
               {/* Mobile card list */}
               <div className="divide-y divide-border lg:hidden">
                 {deals.map((deal) => (
-                  <div key={deal.id} className="px-4 py-4 space-y-3">
+                  <div key={deal.id} className="px-4 py-4 space-y-2.5">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-start gap-2 min-w-0">
                         <MapPin className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0 mt-0.5" />
@@ -106,10 +101,10 @@ export default function AdminPage() {
                         View <ChevronRight className="w-3 h-3" />
                       </Link>
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                       <span className="text-muted-foreground">{formatCurrency(deal.purchasePrice)} · {formatCurrency(deal.estimatedRent)}/mo</span>
-                      <span className={cn(ratingColors[deal.dealRating ?? ""] ?? "text-muted-foreground")}>
-                        {deal.dealRating ?? "—"} · Score {deal.dealScore?.toFixed(0) ?? "—"}
+                      <span className={cn(RATING_TABLE_CLASS[deal.dealRating ?? ""] ?? "text-muted-foreground")}>
+                        {ratingLabel(deal.dealRating)} · Score {deal.dealScore?.toFixed(0) ?? "—"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -164,8 +159,8 @@ export default function AdminPage() {
                           <span className="text-sm font-bold text-foreground">{deal.dealScore?.toFixed(0) ?? "—"}</span>
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span className={cn("text-sm", ratingColors[deal.dealRating ?? ""] ?? "text-muted-foreground")}>
-                            {deal.dealRating ?? "—"}
+                          <span className={cn("text-sm", RATING_TABLE_CLASS[deal.dealRating ?? ""] ?? "text-muted-foreground")}>
+                            {ratingLabel(deal.dealRating)}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-center text-sm text-muted-foreground">{deal.recommendation ?? "—"}</td>

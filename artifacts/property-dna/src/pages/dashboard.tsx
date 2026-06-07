@@ -3,6 +3,7 @@ import { useAuth } from "@/lib/auth";
 import Layout from "@/components/layout";
 import { useListDeals, useGetDashboardStats } from "@workspace/api-client-react";
 import { formatCurrency, cn } from "@/lib/utils";
+import { ratingLabel, RATING_BADGE_CLASS } from "@/lib/ratings";
 import {
   PlusCircle,
   TrendingUp,
@@ -31,14 +32,12 @@ function StatusBadge({ status }: { status: string }) {
 
 function RatingBadge({ rating }: { rating: string | null }) {
   if (!rating) return null;
-  const map: Record<string, string> = {
-    Green: "bg-emerald-100 text-emerald-700",
-    Yellow: "bg-amber-100 text-amber-700",
-    Red: "bg-red-100 text-red-700",
-  };
   return (
-    <span className={cn("inline-flex items-center text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap", map[rating] ?? "bg-muted text-muted-foreground")}>
-      {rating}
+    <span className={cn(
+      "inline-flex items-center text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap",
+      RATING_BADGE_CLASS[rating] ?? "bg-muted text-muted-foreground"
+    )}>
+      {ratingLabel(rating)}
     </span>
   );
 }
@@ -93,13 +92,13 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Rating breakdown — 3-col on all, stacks to full width on xs */}
+        {/* Rating breakdown */}
         {!statsLoading && stats && (
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
-              { label: "Green", value: stats.greenDeals, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", desc: "Score 70+" },
-              { label: "Yellow", value: stats.yellowDeals, color: "text-amber-600", bg: "bg-amber-50 border-amber-200", desc: "Score 45–69" },
-              { label: "Red", value: stats.redDeals, color: "text-red-600", bg: "bg-red-50 border-red-200", desc: "Score 0–44" },
+              { label: "Strong Deals", value: stats.greenDeals, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", desc: "Score 70+" },
+              { label: "Review Needed", value: stats.yellowDeals, color: "text-amber-600", bg: "bg-amber-50 border-amber-200", desc: "Score 45–69" },
+              { label: "Reject", value: stats.redDeals, color: "text-red-600", bg: "bg-red-50 border-red-200", desc: "Score 0–44" },
             ].map(({ label, value, color, bg, desc }) => (
               <div key={label} className={cn("border rounded-xl px-4 py-3.5", bg)}>
                 <div className={cn("text-xl sm:text-2xl font-bold mb-0.5", color)}>{value}</div>
@@ -138,27 +137,21 @@ export default function DashboardPage() {
                   className="flex items-center gap-3 px-4 sm:px-6 py-3.5 hover:bg-muted/30 transition-colors cursor-pointer group"
                   onClick={() => navigate(`/deals/${deal.id}`)}
                 >
-                  {/* Icon — hidden on very small screens */}
                   <div className="hidden sm:flex w-9 h-9 rounded-lg bg-accent items-center justify-center shrink-0">
                     <MapPin className="w-4 h-4 text-primary" />
                   </div>
-
-                  {/* Address + price */}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{deal.address}</p>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">
                       {formatCurrency(deal.purchasePrice)} · {formatCurrency(deal.estimatedRent)}/mo
                     </p>
                   </div>
-
-                  {/* Right side meta */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <RatingBadge rating={deal.dealRating} />
+                    <RatingBadge rating={deal.dealRating ?? null} />
                     <div className="text-right hidden sm:block">
                       <div className="text-sm font-bold text-foreground leading-none">{deal.dealScore?.toFixed(0) ?? "—"}</div>
                       <div className="text-[10px] text-muted-foreground">score</div>
                     </div>
-                    {/* Score inline on mobile */}
                     <div className="sm:hidden text-sm font-bold text-foreground">{deal.dealScore?.toFixed(0) ?? "—"}</div>
                     <StatusBadge status={deal.status} />
                     <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors hidden sm:block" />

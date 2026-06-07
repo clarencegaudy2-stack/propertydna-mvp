@@ -1,0 +1,128 @@
+PROPERTYDNA MVP — SPRINT 2B PRODUCT POLISH + REPORT SLIDES
+
+Do not rebuild the app from scratch.
+Do not remove existing pages.
+Do not add real APIs, Stripe, OpenAI, Google Sheets, OCR, maps API, property data API, or authentication yet.
+
+TASK:
+Improve the PropertyDNA deal report experience and navigation structure.
+
+REQUIREMENTS:
+
+1. Logo Navigation
+- When user is logged out, clicking PropertyDNA logo/name goes to Landing Page.
+- When user is logged in, clicking PropertyDNA logo/name goes to Dashboard.
+
+2. Replace Basic Rating Language
+Do not display “Red / Yellow / Green” as the main wording.
+Use:
+- Strong Deal
+- Review Needed
+- Reject
+
+Colors may remain green/yellow/red visually, but wording must be professional.
+
+3. Deal Report Slide/Tabs System
+On the deal detail/report page, replace the long-scroll report structure with a mobile-friendly tab/slide system.
+
+Create these tabs:
+- Investment
+- Property
+- Location
+- Market
+- Risk
+- Strategy
+- Notes
+- AI Coach
+
+4. Investment Tab
+Show:
+- Deal Score
+- Recommendation
+- Monthly Cash Flow
+- Annual Cash Flow
+- DSCR
+- Cap Rate
+- NOI
+- Cash-on-Cash Return
+- Investment Summary
+
+5. Property Tab
+Placeholder for:
+- Address
+- Property Type
+- Beds
+- Baths
+- Square Footage
+- Lot Size
+- Year Built
+- Parcel Data
+- Property Photos placeholder
+
+6. Location Tab
+Placeholder for:
+- Larger map/location section
+- Neighborhood snapshot
+- Flood risk
+- Transit access
+- Schools
+- Nearby restaurants
+- Grocery stores
+- Hospitals
+- Parks
+- Entertainment
+
+7. Market Tab
+Placeholder for:
+- Comparable sales
+- Comparable rentals
+- Price per square foot
+- Rent per square foot
+- Days on market
+- Market trend summary
+
+8. Risk Tab
+Placeholder for:
+- Flood risk
+- Insurance risk
+- Vacancy risk
+- DSCR stress test
+- Expense risk
+- Market risk
+
+9. Strategy Tab
+Placeholder for:
+- Conventional
+- DSCR loan
+- FHA
+- VA
+- Seller finance
+- Subject-to
+- Lease option
+- BRRRR
+- Master lease
+
+10. Notes Tab
+Move user notes before AI Coach.
+
+11. AI Coach Tab
+Keep as Phase 2 placeholder, but make it feel important.
+Show:
+- Deal strengths
+- Deal risks
+- Negotiation suggestions
+- Lender readiness
+- Missing information
+- Next best action
+
+12. Full Report Upgrade
+Keep Full Report / Stripe as Phase 2 placeholder below the report tabs or as a locked upgrade card.
+
+13. Mobile Requirements
+- Tabs must be swipe-friendly or horizontally scrollable.
+- No horizontal page overflow.
+- Cards must remain readable on iPhone.
+- Do not break dashboard or new analysis form.
+
+SUCCESS CRITERIA:
+The report page should feel like an investor intelligence report, not a long scrolling spreadsheet.

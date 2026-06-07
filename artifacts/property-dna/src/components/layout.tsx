@@ -30,12 +30,13 @@ export default function Layout({ children, title }: LayoutProps) {
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Close drawer on route change
+  // Logo destination: dashboard if logged in, landing if not
+  const logoHref = user ? "/dashboard" : "/";
+
   useEffect(() => {
     setMobileOpen(false);
   }, [location]);
 
-  // Lock body scroll when drawer open
   useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = "hidden";
@@ -44,6 +45,23 @@ export default function Layout({ children, title }: LayoutProps) {
     }
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
+
+  const LogoBlock = ({ inDrawer = false }: { inDrawer?: boolean }) => (
+    <Link
+      href={logoHref}
+      className="flex items-center gap-2.5 group"
+    >
+      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sidebar-primary shrink-0">
+        <Dna className="w-4 h-4 text-sidebar" />
+      </div>
+      <div>
+        <span className="text-sm font-bold text-sidebar-foreground tracking-tight">PropertyDNA</span>
+        {!inDrawer && (
+          <div className="text-[10px] text-sidebar-foreground/50 uppercase tracking-widest">MVP</div>
+        )}
+      </div>
+    </Link>
+  );
 
   const NavLinks = () => (
     <>
@@ -83,7 +101,7 @@ export default function Layout({ children, title }: LayoutProps) {
     </>
   );
 
-  const UserFooter = () => (
+  const UserFooter = () =>
     user ? (
       <div className="flex items-center gap-3 px-2 py-2">
         <div className="w-8 h-8 rounded-full bg-sidebar-primary/20 flex items-center justify-center shrink-0">
@@ -103,36 +121,24 @@ export default function Layout({ children, title }: LayoutProps) {
           <LogOut className="w-3.5 h-3.5" />
         </button>
       </div>
-    ) : null
-  );
+    ) : null;
 
   return (
     <div className="flex min-h-screen bg-background">
       {/* ── Desktop Sidebar ── */}
       <aside className="hidden lg:flex flex-col w-60 bg-sidebar border-r border-sidebar-border shrink-0 sticky top-0 h-screen">
-        {/* Logo */}
         <div className="flex items-center gap-2.5 px-5 py-5 border-b border-sidebar-border">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sidebar-primary">
-            <Dna className="w-4 h-4 text-sidebar" />
-          </div>
-          <div>
-            <span className="text-sm font-bold text-sidebar-foreground tracking-tight">PropertyDNA</span>
-            <div className="text-[10px] text-sidebar-foreground/50 uppercase tracking-widest">MVP</div>
-          </div>
+          <LogoBlock />
         </div>
-
-        {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-0.5">
           <NavLinks />
         </nav>
-
-        {/* User footer */}
         <div className="px-3 py-4 border-t border-sidebar-border">
           <UserFooter />
         </div>
       </aside>
 
-      {/* ── Mobile overlay backdrop ── */}
+      {/* ── Mobile backdrop ── */}
       {mobileOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -147,14 +153,8 @@ export default function Layout({ children, title }: LayoutProps) {
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Drawer header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-sidebar-border">
-          <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sidebar-primary">
-              <Dna className="w-4 h-4 text-sidebar" />
-            </div>
-            <span className="text-sm font-bold text-sidebar-foreground tracking-tight">PropertyDNA</span>
-          </div>
+          <LogoBlock inDrawer />
           <button
             onClick={() => setMobileOpen(false)}
             className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors p-1"
@@ -162,36 +162,31 @@ export default function Layout({ children, title }: LayoutProps) {
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           <NavLinks />
         </nav>
-
-        {/* User footer */}
         <div className="px-3 py-4 border-t border-sidebar-border">
           <UserFooter />
         </div>
       </aside>
 
-      {/* ── Main content ── */}
+      {/* ── Main ── */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar — always visible, hamburger on mobile */}
         <header className="flex items-center gap-3 px-4 sm:px-6 lg:px-8 py-3 lg:py-4 bg-card border-b border-border sticky top-0 z-30">
-          {/* Hamburger — mobile only */}
+          {/* Hamburger */}
           <button
-            className="lg:hidden text-foreground/70 hover:text-foreground transition-colors mr-1 p-1"
+            className="lg:hidden text-foreground/70 hover:text-foreground transition-colors mr-1 p-1 shrink-0"
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5" />
           </button>
 
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2 lg:hidden">
+          {/* Mobile logo — links to dashboard or landing */}
+          <Link href={logoHref} className="flex items-center gap-2 lg:hidden">
             <Dna className="w-4 h-4 text-primary" />
             <span className="text-sm font-bold text-foreground">PropertyDNA</span>
-          </div>
+          </Link>
 
           {/* Breadcrumb — desktop */}
           {title && (
@@ -202,7 +197,7 @@ export default function Layout({ children, title }: LayoutProps) {
             </div>
           )}
 
-          {/* Page title — mobile center */}
+          {/* Page title centered on mobile */}
           {title && (
             <span className="lg:hidden text-sm font-semibold text-foreground ml-auto mr-auto">
               {title}
@@ -210,7 +205,6 @@ export default function Layout({ children, title }: LayoutProps) {
           )}
         </header>
 
-        {/* Page body */}
         <main className="flex-1 overflow-x-hidden">
           {children}
         </main>
