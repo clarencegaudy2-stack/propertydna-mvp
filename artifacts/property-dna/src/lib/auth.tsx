@@ -22,7 +22,7 @@ export function useAuth(): AuthContextValue {
   const { user: clerkUser, isLoaded } = useUser();
   const { signOut } = useClerk();
 
-  const { data: profile } = useQuery({
+  const { data: profile, isFetched: isProfileFetched } = useQuery({
     queryKey: ["me", clerkUser?.id],
     queryFn: async () => {
       const res = await fetch("/api/me", { credentials: "include" });
@@ -37,11 +37,15 @@ export function useAuth(): AuthContextValue {
       }>;
     },
     enabled: !!clerkUser,
-    staleTime: 60_000,
+    staleTime: 0,
   });
 
+  // Only report fully loaded once BOTH Clerk is ready AND the profile query has settled.
+  // This prevents the admin guard from firing before isAdmin is known.
+  const fullyLoaded = isLoaded && (!clerkUser || isProfileFetched);
+
   if (!clerkUser || !isLoaded) {
-    return { user: null, isLoaded, logout: () => signOut() };
+    return { user: null, isLoaded: fullyLoaded, logout: () => signOut() };
   }
 
   const email =
@@ -67,7 +71,7 @@ export function useAuth(): AuthContextValue {
 
   return {
     user,
-    isLoaded,
+    isLoaded: fullyLoaded,
     logout: () => signOut(),
   };
 }

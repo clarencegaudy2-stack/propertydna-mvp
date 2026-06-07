@@ -23,6 +23,15 @@ description: How Clerk is integrated into the PropertyDNA frontend and API, and 
 - `/api/me` is a JIT provisioning route: creates a `users` row on first login if it doesn't exist.
 - Admin routes check `users.isAdmin` in the local DB — no Clerk metadata needed.
 
+## Known race condition (fixed)
+`isLoaded` from Clerk's `useUser()` fires before the `/api/me` profile query resolves. Without the fix, admin guards fire too early with `isAdmin: false`. Fix: `useAuth()` returns `isLoaded = clerkIsLoaded && (!clerkUser || isProfileFetched)` — only true once BOTH Clerk and the profile query have settled.
+
+## JIT provisioning email (fixed)
+`auth.sessionClaims?.email` returns empty string in Clerk dev/test environment. Fix: use `clerkClient.users.getUser(userId)` in `/api/me` to get the real email and name from Clerk's API.
+
+## staleTime
+`/api/me` query uses `staleTime: 0` so every page load refetches the profile. This ensures role changes (is_admin promotion) take effect on next page reload without requiring re-login.
+
 ## CSS (Tailwind v4)
 - Layer declaration must come BEFORE `@import "tailwindcss"`:
   ```css

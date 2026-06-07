@@ -30,11 +30,16 @@ const statusColors: Record<DealStatus, string> = {
 
 export default function AdminPage() {
   const { user, isLoaded } = useAuth();
+  const [, navigate] = useLocation();
   const qc = useQueryClient();
   const { data: deals, isLoading } = useAdminListDeals();
   const updateStatus = useAdminUpdateDealStatus();
 
   if (!isLoaded) return null;
+  if (!user?.isAdmin) {
+    navigate("/dashboard");
+    return null;
+  }
 
   function handleStatusChange(id: number, status: DealStatus) {
     updateStatus.mutate(

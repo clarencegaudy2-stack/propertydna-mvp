@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAuth } from "@clerk/express";
+import { clerkClient } from "@clerk/express";
 import { db } from "@workspace/db";
 import { usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
@@ -10,14 +10,18 @@ const router = Router();
 // GET /me — return current user profile, JIT provision if first visit
 router.get("/", requireAuth, async (req, res) => {
   const userId = (req as AuthedRequest).userId;
-  const auth = getAuth(req);
 
   let [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
 
   if (!user) {
-    const email = auth.sessionClaims?.email as string | undefined ?? "";
-    const firstName = auth.sessionClaims?.firstName as string | undefined ?? null;
-    const lastName = auth.sessionClaims?.lastName as string | undefined ?? null;
+    const clerkUser = await clerkClient.users.getUser(userId);
+    const email =
+      clerkUser.primaryEmailAddress?.emailAddress ??
+      clerkUser.emailAddresses[0]?.emailAddress ??
+      "";
+    const firstName = clerkUser.firstName ?? null;
+    const lastName = clerkUser.lastName ?? null;
+
     [user] = await db
       .insert(usersTable)
       .values({ id: userId, email, firstName, lastName })
