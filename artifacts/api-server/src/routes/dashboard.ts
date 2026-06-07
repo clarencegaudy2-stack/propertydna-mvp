@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { dealsTable } from "@workspace/db";
-import { desc, count, avg, sql } from "drizzle-orm";
+import { desc, count, avg, eq, and } from "drizzle-orm";
+import { requireAuth, type AuthedRequest } from "../middlewares/auth.js";
 
 const router = Router();
 
 function parseDeal(deal: typeof dealsTable.$inferSelect) {
   return {
     id: deal.id,
+    userId: deal.userId ?? null,
     address: deal.address,
     purchasePrice: Number(deal.purchasePrice),
     estimatedRent: Number(deal.estimatedRent),
@@ -31,41 +33,40 @@ function parseDeal(deal: typeof dealsTable.$inferSelect) {
   };
 }
 
-// GET /dashboard/stats
-router.get("/stats", async (_req, res) => {
+// GET /dashboard/stats — scoped to current user
+router.get("/stats", requireAuth, async (req, res) => {
+  const userId = (req as AuthedRequest).userId;
+  const userFilter = eq(dealsTable.userId, userId);
+
   const [statsRow] = await db
     .select({
       totalDeals: count(dealsTable.id),
       avgDealScore: avg(dealsTable.dealScore),
     })
-    .from(dealsTable);
+    .from(dealsTable)
+    .where(userFilter);
 
   const statusCounts = await db
-    .select({
-      status: dealsTable.status,
-      cnt: count(dealsTable.id),
-    })
+    .select({ status: dealsTable.status, cnt: count(dealsTable.id) })
     .from(dealsTable)
+    .where(userFilter)
     .groupBy(dealsTable.status);
 
   const ratingCounts = await db
-    .select({
-      rating: dealsTable.dealRating,
-      cnt: count(dealsTable.id),
-    })
+    .select({ rating: dealsTable.dealRating, cnt: count(dealsTable.id) })
     .from(dealsTable)
+    .where(and(userFilter))
     .groupBy(dealsTable.dealRating);
 
   const recentDeals = await db
     .select()
     .from(dealsTable)
+    .where(userFilter)
     .orderBy(desc(dealsTable.createdAt))
     .limit(5);
 
   const statusMap: Record<string, number> = {};
-  for (const row of statusCounts) {
-    statusMap[row.status] = Number(row.cnt);
-  }
+  for (const row of statusCounts) statusMap[row.status] = Number(row.cnt);
 
   const ratingMap: Record<string, number> = {};
   for (const row of ratingCounts) {

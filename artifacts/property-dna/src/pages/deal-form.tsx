@@ -72,7 +72,7 @@ const SECTIONS: { key: Section; label: string; short: string }[] = [
 ];
 
 export default function NewDealPage() {
-  const { user } = useAuth();
+  const { isLoaded } = useAuth();
   const [, navigate] = useLocation();
   const qc = useQueryClient();
   const createDeal = useCreateDeal();
@@ -98,7 +98,7 @@ export default function NewDealPage() {
     closingCosts: "",
   });
 
-  if (!user) { navigate("/login"); return null; }
+  if (!isLoaded) return null;
 
   const set = (k: keyof typeof form) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
 

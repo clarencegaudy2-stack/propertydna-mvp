@@ -6,6 +6,7 @@ export const dealStatusEnum = pgEnum("deal_status", ["NEW", "PAID", "IN_PROGRESS
 
 export const dealsTable = pgTable("deals", {
   id: serial("id").primaryKey(),
+  userId: text("user_id"),
   address: text("address").notNull(),
   purchasePrice: numeric("purchase_price", { precision: 12, scale: 2 }).notNull(),
   estimatedRent: numeric("estimated_rent", { precision: 10, scale: 2 }).notNull(),

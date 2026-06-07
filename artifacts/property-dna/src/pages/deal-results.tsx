@@ -155,8 +155,7 @@ type TabKey = typeof TABS[number]["key"];
 
 export default function DealResultsPage() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
-  const [, navigate] = useLocation();
+  const { isLoaded } = useAuth();
   const [activeTab, setActiveTab] = useState<TabKey>("investment");
   const dealId = Number(id);
 
@@ -167,7 +166,7 @@ export default function DealResultsPage() {
     query: { enabled: !!dealId, queryKey: getGetDealResultsQueryKey(dealId) },
   });
 
-  if (!user) { navigate("/login"); return null; }
+  if (!isLoaded) return null;
 
   if (dealLoading || resultsLoading) {
     return (

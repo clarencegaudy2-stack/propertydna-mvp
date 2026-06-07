@@ -1,80 +1,73 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { useUser, useClerk } from "@clerk/react";
+import { useQuery } from "@tanstack/react-query";
 
-// FUTURE: Replace with real auth (Clerk, Replit Auth, etc.)
-// This is a mock auth context for Phase 1 MVP.
-// Sessions persist via localStorage so refreshing the browser doesn't log the user out.
-
-interface User {
-  id: number;
+interface UserProfile {
+  id: string;
   name: string;
   email: string;
+  firstName: string | null;
+  lastName: string | null;
+  isAdmin: boolean;
+  subscriptionStatus: string;
   role: "user" | "admin";
 }
 
-interface AuthContextType {
-  user: User | null;
-  login: (email: string, _password: string) => boolean;
-  signup: (name: string, email: string, _password: string) => boolean;
+interface AuthContextValue {
+  user: UserProfile | null;
+  isLoaded: boolean;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+export function useAuth(): AuthContextValue {
+  const { user: clerkUser, isLoaded } = useUser();
+  const { signOut } = useClerk();
 
-const STORAGE_KEY = "pdna_session_v1";
+  const { data: profile } = useQuery({
+    queryKey: ["me", clerkUser?.id],
+    queryFn: async () => {
+      const res = await fetch("/api/me", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json() as Promise<{
+        id: string;
+        email: string;
+        firstName: string | null;
+        lastName: string | null;
+        isAdmin: boolean;
+        subscriptionStatus: string;
+      }>;
+    },
+    enabled: !!clerkUser,
+    staleTime: 60_000,
+  });
 
-const MOCK_USERS: User[] = [
-  { id: 1, name: "Alex Johnson", email: "alex@example.com", role: "user" },
-  { id: 2, name: "Admin User", email: "admin@propertydna.com", role: "admin" },
-];
-
-function loadSession(): User | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as User) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveSession(user: User): void {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(user)); } catch { /* ignore */ }
-}
-
-function clearSession(): void {
-  try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
-}
-
-export function AuthProvider({ children }: { children: ReactNode }) {
-  // Initialise from localStorage so session survives page refresh / browser close-reopen
-  const [user, setUser] = useState<User | null>(() => loadSession());
-
-  function login(email: string, _password: string): boolean {
-    const found = MOCK_USERS.find((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (found) {
-      setUser(found);
-      saveSession(found);
-      return true;
-    }
-    return false;
+  if (!clerkUser || !isLoaded) {
+    return { user: null, isLoaded, logout: () => signOut() };
   }
 
-  function signup(name: string, email: string, _password: string): boolean {
-    const newUser: User = { id: Date.now(), name, email, role: "user" };
-    setUser(newUser);
-    saveSession(newUser);
-    return true;
-  }
+  const email =
+    clerkUser.primaryEmailAddress?.emailAddress ??
+    profile?.email ??
+    "";
+  const firstName =
+    clerkUser.firstName ?? profile?.firstName ?? "";
+  const lastName =
+    clerkUser.lastName ?? profile?.lastName ?? "";
+  const fullName = [firstName, lastName].filter(Boolean).join(" ") || email;
 
-  function logout() {
-    setUser(null);
-    clearSession();
-  }
+  const user: UserProfile = {
+    id: clerkUser.id,
+    name: fullName,
+    email,
+    firstName: firstName || null,
+    lastName: lastName || null,
+    isAdmin: profile?.isAdmin ?? false,
+    subscriptionStatus: profile?.subscriptionStatus ?? "free",
+    role: profile?.isAdmin ? "admin" : "user",
+  };
 
-  return <AuthContext.Provider value={{ user, login, signup, logout }}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
+  return {
+    user,
+    isLoaded,
+    logout: () => signOut(),
+  };
 }

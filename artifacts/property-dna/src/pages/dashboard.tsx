@@ -43,15 +43,11 @@ function RatingBadge({ rating }: { rating: string | null }) {
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();
-  const [, navigate] = useLocation();
+  const { user, isLoaded } = useAuth();
   const { data: stats, isLoading: statsLoading } = useGetDashboardStats();
   const { data: deals, isLoading: dealsLoading } = useListDeals();
 
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
+  if (!isLoaded) return null;
 
   return (
     <Layout title="Dashboard">

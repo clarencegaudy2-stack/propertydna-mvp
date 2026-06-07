@@ -1,7 +1,6 @@
-import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import Layout from "@/components/layout";
-import { Settings, FileSpreadsheet, Bot, CreditCard, User, Bell } from "lucide-react";
+import { Settings, FileSpreadsheet, Bot, CreditCard, User, Bell, ExternalLink } from "lucide-react";
 
 function PlaceholderSection({
   icon: Icon,
@@ -51,10 +50,10 @@ function PlaceholderSection({
 }
 
 export default function SettingsPage() {
-  const { user } = useAuth();
-  const [, navigate] = useLocation();
+  const { user, isLoaded } = useAuth();
 
-  if (!user) { navigate("/login"); return null; }
+  if (!isLoaded) return null;
+  if (!user) return null;
 
   return (
     <Layout title="Settings">
@@ -66,33 +65,58 @@ export default function SettingsPage() {
 
         {/* Profile */}
         <div className="bg-card border border-border rounded-xl p-4 sm:p-5 mb-4">
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
-              <User className="w-4 h-4 text-primary" />
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
+                <User className="w-4 h-4 text-primary" />
+              </div>
+              <span className="text-sm font-semibold text-foreground">Profile</span>
             </div>
-            <span className="text-sm font-semibold text-foreground">Profile</span>
+            <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded uppercase tracking-widest">
+              Live
+            </span>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-medium text-foreground block mb-1.5">Full Name</label>
               <input
                 type="text"
-                defaultValue={user.name}
-                className="w-full px-3 py-2.5 rounded-md border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition"
+                value={user.name}
+                readOnly
+                className="w-full px-3 py-2.5 rounded-md border border-input bg-muted/40 text-sm text-foreground cursor-default"
               />
             </div>
             <div>
               <label className="text-xs font-medium text-foreground block mb-1.5">Email Address</label>
               <input
                 type="email"
-                defaultValue={user.email}
-                className="w-full px-3 py-2.5 rounded-md border border-input bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition"
+                value={user.email}
+                readOnly
+                className="w-full px-3 py-2.5 rounded-md border border-input bg-muted/40 text-sm text-foreground cursor-default"
               />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground/70 mt-3 italic">
-            Profile editing is mock in Phase 1. Real persistence enabled in Phase 2 with full auth.
-          </p>
+
+          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+            <span className="text-xs text-muted-foreground">
+              Account managed by Clerk. To update your name, email, or password, use the Clerk account portal.
+            </span>
+          </div>
+
+          <div className="mt-3 flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Account type:</span>
+            <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
+              user.isAdmin
+                ? "bg-violet-50 text-violet-700 border-violet-200"
+                : "bg-slate-50 text-slate-600 border-slate-200"
+            }`}>
+              {user.isAdmin ? "Admin" : "Standard User"}
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border bg-blue-50 text-blue-600 border-blue-200">
+              {user.subscriptionStatus}
+            </span>
+          </div>
         </div>
 
         {/* Notifications */}
@@ -115,11 +139,10 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-4">
-          {/* FUTURE: Google Sheets — Phase 2 */}
           <PlaceholderSection
             icon={FileSpreadsheet}
             title="Google Sheets Export"
-            description="Automatically sync every submitted deal to a Google Sheets spreadsheet. Great for teams that prefer manual tracking alongside PropertyDNA."
+            description="Automatically sync every submitted deal to a Google Sheets spreadsheet."
             fields={[
               { label: "Google Sheets Spreadsheet URL", placeholder: "https://docs.google.com/spreadsheets/d/..." },
               { label: "Sheet Name / Tab", placeholder: "Deals" },
@@ -127,7 +150,6 @@ export default function SettingsPage() {
             buttonLabel="Connect Google Sheets"
           />
 
-          {/* FUTURE: OpenAI — Phase 2 */}
           <PlaceholderSection
             icon={Bot}
             title="OpenAI — AI Deal Coach"
@@ -139,7 +161,6 @@ export default function SettingsPage() {
             buttonLabel="Save OpenAI Key"
           />
 
-          {/* FUTURE: Stripe — Phase 2 */}
           <PlaceholderSection
             icon={CreditCard}
             title="Stripe Billing"

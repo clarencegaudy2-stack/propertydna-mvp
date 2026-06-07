@@ -1,0 +1,4 @@
+- [Clerk auth architecture](clerk-auth-arch.md) — Clerk is Replit-managed; useAuth() in auth.tsx wraps Clerk with a backward-compat shape; profile editing is read-only (Clerk-managed).
+- [DB schema decisions](db-schema.md) — deals.user_id nullable; old seeded deals visible to any authenticated user via OR isNull check; users/subscriptions tables are Clerk+Stripe-ready.
+- [Wouter + Clerk routing](wouter-clerk-routing.md) — Clerk OAuth sub-paths need wildcard routes: /sign-in/*? and /sign-up/*? (Wouter v3 optional wildcard syntax).
+- [Deal score thresholds](deal-score-thresholds.md) — ≥75 Strong/Proceed/Green, 50-74 Review/Yellow, <50 Reject/Red.

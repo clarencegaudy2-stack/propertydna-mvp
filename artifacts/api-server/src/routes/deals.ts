@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { dealsTable } from "@workspace/db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, isNull, or } from "drizzle-orm";
 import {
   CreateDealBody,
   UpdateDealBody,
@@ -11,13 +11,14 @@ import {
   GetDealResultsParams,
 } from "@workspace/api-zod";
 import { calculateDeal } from "../lib/calculator.js";
+import { requireAuth, type AuthedRequest } from "../middlewares/auth.js";
 
 const router = Router();
 
-// Helper to parse numeric DB strings to numbers
 function parseDeal(deal: typeof dealsTable.$inferSelect) {
   return {
     id: deal.id,
+    userId: deal.userId ?? null,
     address: deal.address,
     purchasePrice: Number(deal.purchasePrice),
     estimatedRent: Number(deal.estimatedRent),
@@ -41,20 +42,22 @@ function parseDeal(deal: typeof dealsTable.$inferSelect) {
   };
 }
 
-// GET /deals — list all deals
-router.get("/", async (_req, res) => {
+// GET /deals — list only the current user's deals
+router.get("/", requireAuth, async (req, res) => {
+  const userId = (req as AuthedRequest).userId;
   const deals = await db
     .select()
     .from(dealsTable)
+    .where(eq(dealsTable.userId, userId))
     .orderBy(desc(dealsTable.createdAt));
   res.json(deals.map(parseDeal));
 });
 
-// POST /deals — create a new deal
-router.post("/", async (req, res) => {
+// POST /deals — create a deal owned by the current user
+router.post("/", requireAuth, async (req, res) => {
+  const userId = (req as AuthedRequest).userId;
   const body = CreateDealBody.parse(req.body);
 
-  // Calculate deal metrics on creation
   const results = calculateDeal({
     purchasePrice: body.purchasePrice,
     estimatedRent: body.estimatedRent,
@@ -74,6 +77,7 @@ router.post("/", async (req, res) => {
   const [deal] = await db
     .insert(dealsTable)
     .values({
+      userId,
       address: body.address,
       purchasePrice: String(body.purchasePrice),
       estimatedRent: String(body.estimatedRent),
@@ -99,23 +103,30 @@ router.post("/", async (req, res) => {
   res.status(201).json(parseDeal(deal));
 });
 
-// GET /deals/:id — get single deal
-router.get("/:id", async (req, res) => {
+// GET /deals/:id — fetch deal (must belong to user)
+router.get("/:id", requireAuth, async (req, res) => {
+  const userId = (req as AuthedRequest).userId;
   const { id } = GetDealParams.parse({ id: Number(req.params.id) });
-  const [deal] = await db.select().from(dealsTable).where(eq(dealsTable.id, id));
+  const [deal] = await db
+    .select()
+    .from(dealsTable)
+    .where(and(eq(dealsTable.id, id), or(eq(dealsTable.userId, userId), isNull(dealsTable.userId))));
   if (!deal) return res.status(404).json({ error: "Deal not found" });
   res.json(parseDeal(deal));
 });
 
-// PATCH /deals/:id — update deal
-router.patch("/:id", async (req, res) => {
+// PATCH /deals/:id — update deal (must belong to user)
+router.patch("/:id", requireAuth, async (req, res) => {
+  const userId = (req as AuthedRequest).userId;
   const { id } = UpdateDealParams.parse({ id: Number(req.params.id) });
   const body = UpdateDealBody.parse(req.body);
 
-  const [existing] = await db.select().from(dealsTable).where(eq(dealsTable.id, id));
+  const [existing] = await db
+    .select()
+    .from(dealsTable)
+    .where(and(eq(dealsTable.id, id), or(eq(dealsTable.userId, userId), isNull(dealsTable.userId))));
   if (!existing) return res.status(404).json({ error: "Deal not found" });
 
-  // Re-calculate with merged values
   const merged = { ...parseDeal(existing), ...body };
   const results = calculateDeal({
     purchasePrice: merged.purchasePrice,
@@ -149,7 +160,6 @@ router.patch("/:id", async (req, res) => {
   if (body.rehabBudget !== undefined) updateValues.rehabBudget = String(body.rehabBudget);
   if (body.closingCosts !== undefined) updateValues.closingCosts = String(body.closingCosts);
   if (body.notes !== undefined) updateValues.notes = body.notes;
-
   updateValues.dealScore = String(results.dealScore);
   updateValues.dealRating = results.dealRating;
   updateValues.recommendation = results.recommendation;
@@ -163,17 +173,27 @@ router.patch("/:id", async (req, res) => {
   res.json(parseDeal(updated));
 });
 
-// DELETE /deals/:id
-router.delete("/:id", async (req, res) => {
+// DELETE /deals/:id — delete deal (must belong to user)
+router.delete("/:id", requireAuth, async (req, res) => {
+  const userId = (req as AuthedRequest).userId;
   const { id } = DeleteDealParams.parse({ id: Number(req.params.id) });
+  const [existing] = await db
+    .select()
+    .from(dealsTable)
+    .where(and(eq(dealsTable.id, id), or(eq(dealsTable.userId, userId), isNull(dealsTable.userId))));
+  if (!existing) return res.status(404).json({ error: "Deal not found" });
   await db.delete(dealsTable).where(eq(dealsTable.id, id));
   res.status(204).send();
 });
 
-// GET /deals/:id/results — get calculated results
-router.get("/:id/results", async (req, res) => {
+// GET /deals/:id/results
+router.get("/:id/results", requireAuth, async (req, res) => {
+  const userId = (req as AuthedRequest).userId;
   const { id } = GetDealResultsParams.parse({ id: Number(req.params.id) });
-  const [deal] = await db.select().from(dealsTable).where(eq(dealsTable.id, id));
+  const [deal] = await db
+    .select()
+    .from(dealsTable)
+    .where(and(eq(dealsTable.id, id), or(eq(dealsTable.userId, userId), isNull(dealsTable.userId))));
   if (!deal) return res.status(404).json({ error: "Deal not found" });
 
   const parsed = parseDeal(deal);
@@ -193,10 +213,7 @@ router.get("/:id/results", async (req, res) => {
     closingCosts: parsed.closingCosts,
   });
 
-  res.json({
-    dealId: id,
-    ...results,
-  });
+  res.json({ dealId: id, ...results });
 });
 
 export default router;
