@@ -1,0 +1,114 @@
+PROPERTYDNA — INFRASTRUCTURE VERIFICATION SPRINT
+
+OBJECTIVE:
+Verify that PropertyDNA is now protected, persistent, and ready for continued development.
+
+DO NOT add new product features in this sprint.
+DO NOT change the UI unless required for verification.
+DO NOT remove existing functionality.
+
+==================================================
+SECTION 1
+AUTHENTICATION VERIFICATION
+==================================================
+
+Verify:
+
+1. Signup works.
+2. Login works.
+3. Logout works.
+4. User sessions persist after refresh.
+5. User sessions persist after closing and reopening the browser.
+6. Dashboard displays the correct user name.
+7. Users cannot access another user’s account.
+
+==================================================
+SECTION 2
+DATABASE VERIFICATION
+==================================================
+
+Verify:
+
+1. New deals save permanently.
+2. Deals remain after page refresh.
+3. Deals remain after logout and login.
+4. Deals remain after app restart.
+5. Deals are tied to the correct user account.
+6. Demo/sample deals are not shown to real users unless intentionally seeded.
+
+==================================================
+SECTION 3
+DEPLOYMENT VERIFICATION
+==================================================
+
+Verify:
+
+1. The deployed app URL works.
+2. The app survives redeployments.
+3. Environment variables are configured correctly.
+4. Production deployment is not using temporary preview-only data.
+
+==================================================
+SECTION 4
+GITHUB BACKUP
+==================================================
+
+Connect this Replit project to GitHub.
+
+Create or connect a GitHub repository for PropertyDNA.
+
+Push the current working code to GitHub.
+
+Add a clear commit message:
+
+"PropertyDNA MVP infrastructure verification baseline"
+
+Confirm:
+
+1. GitHub repository is connected.
+2. Current code is backed up.
+3. Future code changes can be committed.
+4. Project can be restored from GitHub if needed.
+
+==================================================
+SECTION 5
+DATABASE IDENTIFICATION
+==================================================
+
+Identify and document:
+
+1. What database is currently being used.
+2. Where user accounts are stored.
+3. Where deal records are stored.
+4. Whether data persists after deployment.
+5. Whether backups are available.
+6. Whether this database is suitable for MVP launch.
+
+==================================================
+SECTION 6
+OUTPUT REQUIRED
+==================================================
+
+After completing this sprint, provide a short technical summary:
+
+- Authentication status
+- Database status
+- Deployment status
+- GitHub status
+- Any risks found
+- Any fixes completed
+- Any items still requiring developer attention
+
+==================================================
+SUCCESS CRITERIA
+==================================================
+
+PropertyDNA must have:
+
+1. Working user authentication.
+2. Persistent user-specific deal storage.
+3. Verified production deployment.
+4. GitHub code backup.
+5. Clear understanding of what database is being used.
+
+END OF INFRASTRUCTURE VERIFICATION SPRINT
