@@ -1,0 +1,557 @@
+PROPERTYDNA — SPRINT 2C
+
+VERSION:
+MVP PHASE 1 ENHANCEMENT
+
+CLASSIFICATION:
+Report Intelligence Expansion
+
+OBJECTIVE
+
+Expand PropertyDNA from a financial calculator into a structured investment intelligence platform.
+
+DO NOT REMOVE ANY EXISTING FUNCTIONALITY.
+
+DO NOT MODIFY ANY EXISTING WORKING CALCULATIONS.
+
+DO NOT REMOVE CURRENT TABS.
+
+DO NOT BREAK CURRENT MOBILE RESPONSIVENESS.
+
+ONLY IMPLEMENT THE FEATURES BELOW.
+
+==================================================
+SECTION 1
+RECOMMENDATION SYSTEM STANDARDIZATION
+==================================================
+
+Current issue:
+
+Deal Rating and Recommendation can display conflicting language.
+
+Example:
+
+Rating:
+REJECT
+
+Recommendation:
+PASS
+
+This creates confusion.
+
+Replace current recommendation logic with:
+
+IF Deal Score >= 75
+
+Deal Rating:
+STRONG DEAL
+
+Recommendation:
+PROCEED
+
+Color:
+Green
+
+--------------------------------------------------
+
+IF Deal Score >= 50 AND Deal Score < 75
+
+Deal Rating:
+REVIEW
+
+Recommendation:
+ANALYZE FURTHER
+
+Color:
+Yellow
+
+--------------------------------------------------
+
+IF Deal Score < 50
+
+Deal Rating:
+REJECT
+
+Recommendation:
+DO NOT PROCEED
+
+Color:
+Red
+
+--------------------------------------------------
+
+All report screens, dashboard cards, and deal detail pages must use the same terminology.
+
+==================================================
+SECTION 2
+REPORT INTELLIGENCE TAB EXPANSION
+==================================================
+
+Current Tabs:
+
+Investment
+
+Property
+
+Location
+
+Market
+
+Add the following tabs:
+
+Risk
+
+Strategy
+
+Tax
+
+AI Coach
+
+Notes
+
+Maintain current horizontal tab architecture.
+
+Do NOT convert tabs into swipe-only slides.
+
+Users must be able to easily jump between tabs.
+
+If needed, allow horizontal scrolling of tabs.
+
+==================================================
+SECTION 3
+RISK TAB
+==================================================
+
+Create a dedicated Risk tab.
+
+Purpose:
+
+Provide a centralized risk assessment section.
+
+Display the following placeholder cards:
+
+Flood Risk
+
+Crime Index
+
+Insurance Risk
+
+Environmental Risk
+
+School Quality
+
+Natural Disaster Risk
+
+Vacancy Risk
+
+Market Risk
+
+Neighborhood Risk
+
+Display:
+
+"Coming In Phase 2"
+
+for all fields.
+
+Use lock icons consistent with existing Phase 2 UI.
+
+==================================================
+SECTION 4
+STRATEGY TAB
+==================================================
+
+Create a dedicated Strategy tab.
+
+Purpose:
+
+Help investors understand possible investment approaches.
+
+Display the following strategy cards:
+
+Buy & Hold
+
+BRRRR
+
+Fix & Flip
+
+House Hack
+
+Short-Term Rental
+
+Mid-Term Rental
+
+Seller Financing
+
+Subject-To
+
+Lease Option
+
+Commercial Conversion
+
+Portfolio Fit
+
+Display:
+
+"Coming In Phase 2"
+
+for all fields.
+
+Use Phase 2 lock styling.
+
+==================================================
+SECTION 5
+TAX TAB
+==================================================
+
+Create a dedicated Tax tab.
+
+Purpose:
+
+Provide tax intelligence and CPA-focused analysis.
+
+Add:
+
+Annual Depreciation
+
+Depreciation Schedule
+
+Estimated Tax Savings
+
+After-Tax Cash Flow
+
+Tax Adjusted Return
+
+--------------------------------------------------
+
+Residential Depreciation Formula
+
+Annual Depreciation =
+Building Value ÷ 27.5
+
+--------------------------------------------------
+
+Commercial Depreciation Formula
+
+Annual Depreciation =
+Building Value ÷ 39
+
+--------------------------------------------------
+
+MVP Assumptions
+
+Building Value =
+80% of Purchase Price
+
+Land Value =
+20% of Purchase Price
+
+Display disclaimer:
+
+"Estimated values only. Phase 2 will use assessor and parcel data."
+
+--------------------------------------------------
+
+Example Display
+
+Purchase Price:
+$300,000
+
+Estimated Building Value:
+$240,000
+
+Estimated Land Value:
+$60,000
+
+Annual Depreciation:
+$8,727
+
+==================================================
+SECTION 6
+AI COACH TAB
+==================================================
+
+Create a dedicated AI Coach tab.
+
+AI Coach should no longer appear only at the bottom of the report.
+
+Move AI coaching into its own intelligence section.
+
+Display:
+
+Strengths
+
+Weaknesses
+
+Risk Flags
+
+Negotiation Suggestions
+
+Financing Notes
+
+Exit Strategy Ideas
+
+Investor Considerations
+
+Current Version:
+
+Rule-Based Analysis
+
+Future Version:
+
+GPT-Powered Deal Coaching
+
+Display:
+
+"Enhanced AI Coaching Coming In Phase 2"
+
+==================================================
+SECTION 7
+NOTES TAB
+==================================================
+
+Create a dedicated Notes tab.
+
+Move all deal notes into this section.
+
+Display:
+
+User Notes
+
+Property Notes
+
+Rehab Notes
+
+Acquisition Notes
+
+Investment Notes
+
+Future Collaboration Notes
+
+Preserve any existing notes functionality.
+
+==================================================
+SECTION 8
+MARKET TAB EXPANSION
+==================================================
+
+Expand Market tab.
+
+Add placeholders for:
+
+ARV
+
+After Repair Value
+
+Equity Created
+
+Spread To ARV
+
+Rent Growth
+
+Price Growth
+
+Inventory Trend
+
+Market Heat Score
+
+Median Sale Price
+
+Average Days On Market
+
+Appreciation Trend
+
+Display:
+
+"Coming In Phase 2"
+
+for all fields.
+
+==================================================
+SECTION 9
+LOCATION TAB EXPANSION
+==================================================
+
+Expand Location tab.
+
+Retain current:
+
+Neighborhood Snapshot
+
+Nearby Amenities
+
+Risk Factors
+
+Add placeholders for:
+
+Transit Access
+
+Bus Routes
+
+Train Access
+
+Airport Distance
+
+Entertainment Districts
+
+Shopping Centers
+
+Restaurants
+
+Employment Centers
+
+Population Growth
+
+Walkability
+
+Display:
+
+"Coming In Phase 2"
+
+for all fields.
+
+==================================================
+SECTION 10
+PROPERTY TAB EXPANSION
+==================================================
+
+Expand Property tab.
+
+Retain existing fields.
+
+Prepare placeholders for:
+
+Property Photos
+
+Google Street View
+
+Parcel Data
+
+Property History
+
+Ownership History
+
+Permit History
+
+Assessment History
+
+Building Sketch
+
+Property Condition
+
+Display:
+
+"Coming In Phase 2"
+
+for all fields.
+
+==================================================
+SECTION 11
+INVESTMENT TAB IMPROVEMENTS
+==================================================
+
+Keep current financial metrics.
+
+Add:
+
+Estimated Tax Savings
+
+Annual Depreciation
+
+Tax Adjusted Cash Flow
+
+Total Equity Position
+
+Future Equity Potential
+
+These should connect to Tax tab calculations.
+
+==================================================
+SECTION 12
+GOOGLE SHEETS INTEGRATION PREPARATION
+==================================================
+
+DO NOT CONNECT GOOGLE SHEETS YET.
+
+DO NOT IMPLEMENT APIS YET.
+
+Prepare architecture for future integration.
+
+Future data sources:
+
+Property Data
+
+Market Data
+
+Risk Data
+
+Tax Data
+
+Comparable Sales
+
+Comparable Rentals
+
+Neighborhood Data
+
+AI Coaching Data
+
+Architecture should support future syncing without redesigning report pages.
+
+==================================================
+SECTION 13
+USER EXPERIENCE REQUIREMENTS
+==================================================
+
+Maintain mobile-first design.
+
+Maintain existing report layout.
+
+Maintain existing dashboard.
+
+Maintain current tab structure.
+
+Do not remove existing cards.
+
+Do not remove existing calculations.
+
+Do not remove existing report functionality.
+
+==================================================
+SUCCESS CRITERIA
+==================================================
+
+User can navigate:
+
+Investment
+
+Property
+
+Location
+
+Market
+
+Risk
+
+Strategy
+
+Tax
+
+AI Coach
+
+Notes
+
+All existing calculations continue functioning.
+
+Recommendation terminology is standardized.
+
+Tax intelligence layer exists.
+
+Depreciation calculations exist.
+
+AI Coach has a dedicated section.
+
+Future Phase 2 architecture is prepared.
+
+No existing functionality breaks.
+
+END OF SPRINT 2C

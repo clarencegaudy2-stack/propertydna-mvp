@@ -33,7 +33,7 @@ export interface DealResults {
   totalInvestment: number;
   dealScore: number;
   dealRating: "Green" | "Yellow" | "Red";
-  recommendation: "Buy" | "Review" | "Pass";
+  recommendation: "Proceed" | "Analyze Further" | "Do Not Proceed";
 }
 
 export function calculateDeal(input: DealInputNumbers): DealResults {
@@ -142,11 +142,11 @@ function computeDealScore(metrics: {
 
 function rateAndRecommend(score: number): {
   dealRating: "Green" | "Yellow" | "Red";
-  recommendation: "Buy" | "Review" | "Pass";
+  recommendation: "Proceed" | "Analyze Further" | "Do Not Proceed";
 } {
-  if (score >= 70) return { dealRating: "Green", recommendation: "Buy" };
-  if (score >= 45) return { dealRating: "Yellow", recommendation: "Review" };
-  return { dealRating: "Red", recommendation: "Pass" };
+  if (score >= 75) return { dealRating: "Green", recommendation: "Proceed" };
+  if (score >= 50) return { dealRating: "Yellow", recommendation: "Analyze Further" };
+  return { dealRating: "Red", recommendation: "Do Not Proceed" };
 }
 
 function round2(n: number): number {

@@ -92,13 +92,13 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Rating breakdown */}
+        {/* Rating breakdown — thresholds: ≥75 Strong Deal, 50–74 Review, <50 Reject */}
         {!statsLoading && stats && (
           <div className="grid grid-cols-3 gap-3 mb-5">
             {[
-              { label: "Strong Deals", value: stats.greenDeals, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", desc: "Score 70+" },
-              { label: "Review Needed", value: stats.yellowDeals, color: "text-amber-600", bg: "bg-amber-50 border-amber-200", desc: "Score 45–69" },
-              { label: "Reject", value: stats.redDeals, color: "text-red-600", bg: "bg-red-50 border-red-200", desc: "Score 0–44" },
+              { label: "Strong Deals", value: stats.greenDeals, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", desc: "Score 75+" },
+              { label: "Review", value: stats.yellowDeals, color: "text-amber-600", bg: "bg-amber-50 border-amber-200", desc: "Score 50–74" },
+              { label: "Reject", value: stats.redDeals, color: "text-red-600", bg: "bg-red-50 border-red-200", desc: "Score 0–49" },
             ].map(({ label, value, color, bg, desc }) => (
               <div key={label} className={cn("border rounded-xl px-4 py-3.5", bg)}>
                 <div className={cn("text-xl sm:text-2xl font-bold mb-0.5", color)}>{value}</div>
