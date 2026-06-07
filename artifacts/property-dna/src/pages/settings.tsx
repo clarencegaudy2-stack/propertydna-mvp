@@ -17,10 +17,10 @@ function PlaceholderSection({
   buttonLabel: string;
 }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-5">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
             <Icon className="w-4 h-4 text-primary" />
           </div>
           <span className="text-sm font-semibold text-foreground">{title}</span>
@@ -29,7 +29,7 @@ function PlaceholderSection({
           Phase 2
         </span>
       </div>
-      <p className="text-xs text-muted-foreground mb-4">{description}</p>
+      <p className="text-xs text-muted-foreground mb-4 leading-relaxed">{description}</p>
       <div className="space-y-3">
         {fields.map(({ label, placeholder, type }) => (
           <div key={label}>
@@ -43,7 +43,7 @@ function PlaceholderSection({
           </div>
         ))}
       </div>
-      <button disabled className="mt-4 text-xs font-semibold text-muted-foreground/50 px-4 py-2 border border-border rounded-md cursor-not-allowed bg-muted/30">
+      <button disabled className="mt-4 text-xs font-semibold text-muted-foreground/50 px-4 py-2 border border-border rounded-md cursor-not-allowed bg-muted/30 w-full sm:w-auto">
         {buttonLabel} (Coming Soon)
       </button>
     </div>
@@ -58,21 +58,21 @@ export default function SettingsPage() {
 
   return (
     <Layout title="Settings">
-      <div className="px-8 py-7 max-w-3xl mx-auto">
-        <div className="mb-7">
-          <h1 className="text-xl font-bold text-foreground">Settings</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Manage your account and configure integrations for Phase 2.</p>
+      <div className="px-4 sm:px-6 lg:px-8 py-5 lg:py-7 max-w-3xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-lg sm:text-xl font-bold text-foreground">Settings</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Manage your account and configure Phase 2 integrations.</p>
         </div>
 
         {/* Profile */}
-        <div className="bg-card border border-border rounded-xl p-5 mb-4">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 mb-4">
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
               <User className="w-4 h-4 text-primary" />
             </div>
             <span className="text-sm font-semibold text-foreground">Profile</span>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-medium text-foreground block mb-1.5">Full Name</label>
               <input
@@ -90,15 +90,15 @@ export default function SettingsPage() {
               />
             </div>
           </div>
-          <div className="mt-3 text-xs text-muted-foreground italic">
-            Profile editing is a mock in Phase 1. Real persistence is enabled in Phase 2 with full auth.
-          </div>
+          <p className="text-xs text-muted-foreground/70 mt-3 italic">
+            Profile editing is mock in Phase 1. Real persistence enabled in Phase 2 with full auth.
+          </p>
         </div>
 
-        {/* Notification placeholder */}
-        <div className="bg-card border border-border rounded-xl p-5 mb-4">
+        {/* Notifications */}
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 mb-4">
           <div className="flex items-center gap-2.5 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
               <Bell className="w-4 h-4 text-primary" />
             </div>
             <span className="text-sm font-semibold text-foreground">Notifications</span>
@@ -115,11 +115,11 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-4">
-          {/* FUTURE: Google Sheets integration — POST deal data to a configured Google Sheets spreadsheet via Sheets API v4 */}
+          {/* FUTURE: Google Sheets — Phase 2 */}
           <PlaceholderSection
             icon={FileSpreadsheet}
             title="Google Sheets Export"
-            description="Automatically sync every submitted deal to a Google Sheets spreadsheet. Great for teams that prefer manual deal tracking alongside PropertyDNA."
+            description="Automatically sync every submitted deal to a Google Sheets spreadsheet. Great for teams that prefer manual tracking alongside PropertyDNA."
             fields={[
               { label: "Google Sheets Spreadsheet URL", placeholder: "https://docs.google.com/spreadsheets/d/..." },
               { label: "Sheet Name / Tab", placeholder: "Deals" },
@@ -127,11 +127,11 @@ export default function SettingsPage() {
             buttonLabel="Connect Google Sheets"
           />
 
-          {/* FUTURE: OpenAI integration — store API key to power AI Deal Coach on deal results pages */}
+          {/* FUTURE: OpenAI — Phase 2 */}
           <PlaceholderSection
             icon={Bot}
             title="OpenAI — AI Deal Coach"
-            description="Connect your OpenAI API key to enable GPT-4 powered deal analysis on every results page. The AI coach will flag risks, suggest negotiation tactics, and summarize each deal in plain English."
+            description="Connect your OpenAI API key to enable GPT-4 powered deal analysis on every results page."
             fields={[
               { label: "OpenAI API Key", placeholder: "sk-...", type: "password" },
               { label: "Model", placeholder: "gpt-4o" },
@@ -139,11 +139,11 @@ export default function SettingsPage() {
             buttonLabel="Save OpenAI Key"
           />
 
-          {/* FUTURE: Stripe integration — connect Stripe account to accept payments for full report unlocks */}
+          {/* FUTURE: Stripe — Phase 2 */}
           <PlaceholderSection
             icon={CreditCard}
             title="Stripe Billing"
-            description="Connect Stripe to enable one-time payments for full professional deal reports ($49 per report). Users can upgrade directly from any deal results page."
+            description="Connect Stripe to enable one-time payments for full professional deal reports ($49 per report)."
             fields={[
               { label: "Stripe Publishable Key", placeholder: "pk_live_..." },
               { label: "Stripe Secret Key", placeholder: "sk_live_...", type: "password" },
